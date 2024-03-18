@@ -3,6 +3,9 @@ import axios from 'axios';
 import '../../css/PasswordGenerator/passwordGenerator.css';
 import StarBackground from "../Background/StarBackground";
 import API_URL from "../../config/config";
+import ErrorPage from "../Error/ErrorPage";
+import { useNavigate } from 'react-router-dom';
+import useAuth from '../Admin/useAuth';
 
 const PasswordGenerator = () => {
     const [difficulty, setDifficulty] = useState('EASY');
@@ -11,6 +14,18 @@ const PasswordGenerator = () => {
     const buttonRef = useRef(null);
     const [animationPlaying, setAnimationPlaying] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    if (!isAuthenticated ) {
+        return <ErrorPage errorMessage="You do not have permission to access this page." />;
+    }
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username'); // Удаляем имя пользователя из localStorage при выходе
+        navigate('/login');
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,6 +49,7 @@ const PasswordGenerator = () => {
             setPassword(response.data);
         } catch (error) {
             console.error('Failed to generate password: ', error);
+            setError('You do not have permission to access this page.');
         }
     };
 
@@ -53,10 +69,7 @@ const PasswordGenerator = () => {
         }, 2000)
     };
 
-    const closeAlert = () => {
-        setShowAlert(false);
-    };
-
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (!animationPlaying) {
             setTimeout(() => {
@@ -66,15 +79,24 @@ const PasswordGenerator = () => {
         }
     }, [animationPlaying]);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         setTimeout(() => {
             setAnimationPlaying(true);
         }, 30000);
     }, []);
 
+    if (error) {
+        return <ErrorPage errorMessage={error} />;
+    }
+
     return (
         <div className="password-generator">
-            <StarBackground />
+            <StarBackground/>
+            <div className="user-container">
+                <span>Current User: {localStorage.getItem('username')}</span>
+                <button className="logout-button" onClick={handleLogout}>Logout</button>
+            </div>
             <form onSubmit={handleSubmit}>
                 <label>
                     Difficulty:
