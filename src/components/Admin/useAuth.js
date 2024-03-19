@@ -14,6 +14,7 @@ const useAuth = (role) => {
         if (storedToken && storedUsername && storedRoles) {
             setIsAuthenticated(true);
             setIsAuthorized(storedRoles.includes(role));
+
         } else {
             navigate('/login');
         }

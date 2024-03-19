@@ -11,7 +11,6 @@ const PasswordGenerator = () => {
     const [length, setLength] = useState(8);
     const [password, setPassword] = useState('');
     const buttonRef = useRef(null);
-    const [animationPlaying, setAnimationPlaying] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -29,7 +28,6 @@ const PasswordGenerator = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setAnimationPlaying(false);
         buttonRef.current.style.animationPlayState = 'paused';
 
         try {
